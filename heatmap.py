@@ -11,29 +11,113 @@ import random
 import numpy as np
 
 
+def Time(x: int):
+    x = str(x)
+    if len(x) < 2:
+        x = "0" + x
+    return x
 
 
-
-st.set_page_config(page_title="Chiller Optimization",layout='wide')
+st.set_page_config(page_title="Chiller Optimization", layout='wide')
 
 col1, col2 = st.columns([1, 1])
 
-sns.set_theme()
-with col1:
-    np.random.seed(0)
-    uniform_data = np.random.rand(20, 20)
-    fig = plt.figure(figsize=(10, 8))
-    ax = sns.heatmap(uniform_data)
-    st.pyplot(fig)
+if False:
+    sns.set_theme()
+    with col1:
+        np.random.seed(0)
+        uniform_data = np.random.rand(20, 20)
+        fig = plt.figure(figsize=(10, 8))
+        plt.title("Chilled Water Supply Temperature Distribution Heatmap")
+        ax = sns.heatmap(uniform_data, cmap="YlGnBu")
+        st.pyplot(fig)
 
-with col2:
-    np.random.seed(1)
-    uniform_data = np.random.rand(20, 20)
-    fig = plt.figure(figsize=(10, 8))
-    ax = sns.heatmap(uniform_data)
-    st.pyplot(fig)
+    with col2:
+        np.random.seed(1)
+        uniform_data = np.random.rand(20, 20)
+        fig = plt.figure(figsize=(10, 8))
+        plt.title("CO2 Concentration Distribution heatmap")
+        ax = sns.heatmap(uniform_data)
+        st.pyplot(fig)
 
+else:
+    with col1:
+        uniform_data = np.random.rand(20, 24)
+        fig = go.Figure(data=go.Heatmap(
+                        z=uniform_data))
+        fig.update_layout(
+            title={
+                'text': "Chilled Water Supply Temperature Distribution Heatmap",
+                'y': 0.9,  # new
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'  # new
+            },
+            autosize=False,
+            width=500,
+            height=800,
+            margin=dict(
+                l=50,
+                r=50,
+                b=100,
+                t=100,
+                pad=4
+            ),
+            paper_bgcolor="Black",
+            yaxis=dict(
+                title_text="Floor",
+                ticktext=[str(i)+"/F" for i in range(20)],
+                tickvals=[i for i in range(20)],
+                tickmode="array",
+                titlefont=dict(size=30),
+            ), xaxis=dict(
+                title_text="time",
+                ticktext=[f"{Time(i)}:00" for i in range(24)],
+                tickvals=[i for i in range(24)],
+                tickmode="array",
+                titlefont=dict(size=30),
+            )
+        )
+        st.plotly_chart(fig, use_container_width=True)
+    with col2:
+        uniform_data = np.random.rand(20, 24)
+        fig = go.Figure(data=go.Heatmap(
+                        z=uniform_data, colorscale='Viridis'))
+        fig.update_layout(
+            title={
+                'text': "CO2 Concentration Distribution heatmap",
+                'y': 0.9,  # new
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'  # new
+            },
+            autosize=False,
+            width=500,
+            height=800,
+            margin=dict(
+                l=50,
+                r=50,
+                b=100,
+                t=100,
+                pad=4
+            ),
+            paper_bgcolor="Black",
 
+            yaxis=dict(
+                title_text="Floor",
+                ticktext=[str(i)+"/F" for i in range(20)],
+                tickvals=[i for i in range(20)],
+                tickmode="array",
+                titlefont=dict(size=30),
+            ), xaxis=dict(
+                title_text="time",
+                ticktext=[f"{Time(i)}:00" for i in range(24)],
+                tickvals=[i for i in range(24)],
+                tickmode="array",
+                titlefont=dict(size=30),
+            )
+        )
+        st.plotly_chart(fig, use_container_width=True)
 # if submit_button:
 #     print(cooling_load, wet_bulb)
 
@@ -77,7 +161,7 @@ with col2:
 # st.write(fig)
 
 # HtmlFile = open("index.html", 'r', encoding='utf-8')
-# source_code = HtmlFile.read() 
+# source_code = HtmlFile.read()
 # components.html(source_code, height=1000, width=1000)
 
 
@@ -91,4 +175,3 @@ with col2:
 
 # with col3:
 #     components.html(source_code, height=800, width=800)
-
