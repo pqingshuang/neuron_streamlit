@@ -20,6 +20,8 @@ def Time(x: int):
 
 st.set_page_config(page_title="Chiller Optimization", layout='wide')
 
+st.title("Heatmap analysis")
+
 col1, col2 = st.columns([1, 1])
 
 if False:
