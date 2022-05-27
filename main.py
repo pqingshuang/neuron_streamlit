@@ -21,7 +21,7 @@ def modelFunction(cl: Union[float, str], wb: Union[float, str]) -> Tuple[int, pd
     if isinstance(cl, str) and isinstance(wb, str):
         return 0, pd.DataFrame(columns=["Name", "FLA", "SetPoint"])
     ls = [['CH0'+ str(i+1), str(random.randint(60, 90)) + '%', str(random.randint(12, 18)/2)] for i in range(5)]
-    return random.randint(3, 7), pd.DataFrame(ls, columns=["Name", "FLA", "SetPoint"])
+    return 5, pd.DataFrame(ls, columns=["Name", "FLA", "SetPoint"])
 
 @st.cache
 def get_data():
