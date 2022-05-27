@@ -83,9 +83,10 @@ def Time(x: int):
 st.set_page_config(page_title="Chiller Optimization", layout='wide')
 
 st.title("Heatmap Analysis")
-chosenDate = st.selectbox("Select time",pd.date_range(start=datetime.datetime(2021,4,12), end=datetime.datetime(2021,5,11), freq='1d')) 
+#chosenDate = st.selectbox("Select time",pd.date_range(start=datetime.datetime(2021,4,12), end=datetime.datetime(2021,5,11), freq='1d')) 
 col1, col2 = st.columns([1, 1])
-
+result = pd.read_csv('result.csv')
+result2 = pd.read_csv("result2.csv")
 if False:
     sns.set_theme()
     with col1:
@@ -106,62 +107,62 @@ if False:
 
 else:
     
-    endChosenDate = chosenDate + datetime.timedelta(days=1)
-    chosenDateStr = datetime.datetime.strftime(chosenDate, "%Y-%m-%dT%H:%M:%SZ")
-    endChosenDateStr = datetime.datetime.strftime(endChosenDate, "%Y-%m-%dT%H:%M:%SZ")
+    # endChosenDate = chosenDate + datetime.timedelta(days=1)
+    # chosenDateStr = datetime.datetime.strftime(chosenDate, "%Y-%m-%dT%H:%M:%SZ")
+    # endChosenDateStr = datetime.datetime.strftime(endChosenDate, "%Y-%m-%dT%H:%M:%SZ")
 
-    neo4jdbname = 'neo4j'
-    auth = ("neo4j", "test")
-    name = 'neo4j'
-    url = f"bolt://18.163.30.4:7691/{neo4jdbname}"
-    graph = py2neo.Graph(url,name=name, auth=auth)
-    equipname = graph.run("match (n)-[:hasPoint]->(p) where n.name='AHU' return p.name as p").to_data_frame()
-    equipList = list(equipname['p'])
-    equipList = sorted(equipList)
-    client = influxdb.DataFrameClient('18.163.30.4', 8086, database='ArupDemo')
+    # neo4jdbname = 'neo4j'
+    # auth = ("neo4j", "test")
+    # name = 'neo4j'
+    # url = f"bolt://18.163.30.4:7691/{neo4jdbname}"
+    # graph = py2neo.Graph(url,name=name, auth=auth)
+    # equipname = graph.run("match (n)-[:hasPoint]->(p) where n.name='AHU' return p.name as p").to_data_frame()
+    # equipList = list(equipname['p'])
+    # equipList = sorted(equipList)
+    # client = influxdb.DataFrameClient('18.163.30.4', 8086, database='ArupDemo')
 
-    df_list = []
-    res= client.query(f"""select mean("value") from OTP where "FunctionType"='AHU_Water_Supply_Temperature' 
-    and time>'{chosenDateStr}' and time<'{endChosenDateStr}' group by "EquipmentName", time(60m) """)
-    res2= client.query(f"""select mean("value") from OTP where "FunctionType"='AHU_Water_Return_Temperature' 
-    and time>'{chosenDateStr}' and time<'{endChosenDateStr}' group by "EquipmentName", time(60m) """)
-    floor = []
-    for equip in equipList:
-        if equip.rsplit("-",1)[0] not in floor:
-            floor.append(equip.rsplit("-",1)[0])
-            df = res[('OTP',(('EquipmentName', equip),))]
-            df2 = res2[('OTP',(('EquipmentName', equip),))]
-            if len(df) == 0 or len(df2) == 0 :
-                continue
-            df = df.rename(columns={"mean": equip})
-            dff = pd.concat([df,df2], axis=1)
-            df[equip] = dff.apply(lambda x: x['mean'] - x[equip], axis=1)
-            df_list.append(df)
-
-
-    df_list2 = []
-    res3= client.query(f"""select mean("value") from OTP where "FunctionType"='AHU_Return_Air_CO2_Concentration' 
-    and time>'{chosenDateStr}' and time<'{endChosenDateStr}' group by "EquipmentName", time(60m) """)
-    floor2 = []
-    for equip in equipList:
-        if equip.rsplit("-",1)[0] not in floor2:
-            floor2.append(equip.rsplit("-",1)[0])
-            df = res3[('OTP',(('EquipmentName', equip),))]
-            if len(df) == 0:
-                continue
-            df = df.rename(columns={"mean": equip})
-            df_list2.append(df)
+    # df_list = []
+    # res= client.query(f"""select mean("value") from OTP where "FunctionType"='AHU_Water_Supply_Temperature' 
+    # and time>'{chosenDateStr}' and time<'{endChosenDateStr}' group by "EquipmentName", time(60m) """)
+    # res2= client.query(f"""select mean("value") from OTP where "FunctionType"='AHU_Water_Return_Temperature' 
+    # and time>'{chosenDateStr}' and time<'{endChosenDateStr}' group by "EquipmentName", time(60m) """)
+    # floor = []
+    # for equip in equipList:
+    #     if equip.rsplit("-",1)[0] not in floor:
+    #         floor.append(equip.rsplit("-",1)[0])
+    #         df = res[('OTP',(('EquipmentName', equip),))]
+    #         df2 = res2[('OTP',(('EquipmentName', equip),))]
+    #         if len(df) == 0 or len(df2) == 0 :
+    #             continue
+    #         df = df.rename(columns={"mean": equip})
+    #         dff = pd.concat([df,df2], axis=1)
+    #         df[equip] = dff.apply(lambda x: x['mean'] - x[equip], axis=1)
+    #         df_list.append(df)
 
 
-    result2 = pd.concat(df_list2, axis=1)
+    # df_list2 = []
+    # res3= client.query(f"""select mean("value") from OTP where "FunctionType"='AHU_Return_Air_CO2_Concentration' 
+    # and time>'{chosenDateStr}' and time<'{endChosenDateStr}' group by "EquipmentName", time(60m) """)
+    # floor2 = []
+    # for equip in equipList:
+    #     if equip.rsplit("-",1)[0] not in floor2:
+    #         floor2.append(equip.rsplit("-",1)[0])
+    #         df = res3[('OTP',(('EquipmentName', equip),))]
+    #         if len(df) == 0:
+    #             continue
+    #         df = df.rename(columns={"mean": equip})
+    #         df_list2.append(df)
 
-    dateIndex = [i.tz_localize(None) for i in list(result2.index)]
 
-    floorList = [i.split('-')[1]+ 'F' for i in floor]
+    # result2 = pd.concat(df_list2, axis=1)
 
-    result = pd.concat(df_list, axis=1)
+    # dateIndex = [i.tz_localize(None) for i in list(result2.index)]
 
-    dateIndex = [i.tz_localize(None) for i in list(result.index)]
+    #floorList = [i.split('-')[1]+ 'F' for i in floor]
+
+    # result = pd.concat(df_list, axis=1)
+
+    #dateIndex = [i.tz_localize(None) for i in list(result.index)]
     with col1:
         uniform_data = np.random.rand(20, 24)
         fig = go.Figure(data=go.Heatmap(
@@ -187,14 +188,14 @@ else:
             paper_bgcolor="Black",
             yaxis=dict(
                 title_text="Floor",
-                ticktext=floorList,
-                tickvals=[i for i in range(len(floorList))],
+                #ticktext=floorList,
+                #tickvals=[i for i in range(len(floorList))],
                 tickmode="array",
                 titlefont=dict(size=30),
             ), xaxis=dict(
                 title_text="time",
-                ticktext=dateIndex,
-                tickvals=[i for i in range(len(dateIndex))],
+                #ticktext=dateIndex,
+                #tickvals=[i for i in range(len(dateIndex))],
                 tickmode="array",
                 titlefont=dict(size=30),
             )
@@ -226,19 +227,21 @@ else:
 
             yaxis=dict(
                 title_text="Floor",
-                ticktext=floorList,
-                tickvals=[i for i in range(len(floorList))],
+                #ticktext=floorList,
+                #tickvals=[i for i in range(len(floorList))],
                 tickmode="array",
                 titlefont=dict(size=30),
             ), xaxis=dict(
                 title_text="time",
-                ticktext=dateIndex,
-                tickvals=[i for i in range(len(dateIndex))],
+                #ticktext=dateIndex,
+                #tickvals=[i for i in range(len(dateIndex))],
                 tickmode="array",
                 titlefont=dict(size=30),
             )
         )
         st.plotly_chart(fig, use_container_width=True)
+        result.to_csv("result.csv")
+        result2.to_csv("result2.csv")
 # if submit_button:
 #     print(cooling_load, wet_bulb)
 
